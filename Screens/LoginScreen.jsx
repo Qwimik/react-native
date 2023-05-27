@@ -5,6 +5,9 @@ import {
   TextInput,
   TouchableOpacity,
   View,
+  TouchableWithoutFeedback,
+  KeyboardAvoidingView,
+  Keyboard,
 } from "react-native";
 import {
   useFonts,
@@ -13,44 +16,91 @@ import {
 } from "@expo-google-fonts/roboto";
 import { useState } from "react";
 
-const RegistrationScreen = () => {
-  const [isShow, setIsShow] = useState(false);
+const initialState = {
+  email: "",
+  password: "",
+};
+
+const LoginScreen = () => {
+  const [passShow, setPassShow] = useState(false);
+  const [isShowKeyboard, setIsShowKeyboard] = useState(false);
+  const [user, setUser] = useState(initialState);
+
   const [fontsLoaded] = useFonts({ Roboto_400Regular, Roboto_500Medium });
+
+  const keyboardHide = () => {
+    setIsShowKeyboard(false);
+    Keyboard.dismiss();
+  };
+
+  const onSubmit = () => {
+    keyboardHide();
+    console.log(user);
+    setUser(initialState);
+  };
+
   if (!fontsLoaded) {
     return null;
   }
+
   return (
     <View style={styles.regContainer}>
-      <View style={{ flex: 1 }}></View>
-      <View style={styles.regWrapper}>
-        <View style={styles.contentWrapper}>
-          <Text style={styles.h1}>Login</Text>
-          <View style={styles.fromWrapper}>
-            <TextInput style={styles.input} placeholder="Email" />
-            <View style={styles.passContainer}>
-              <TextInput
-                style={styles.input}
-                placeholder="Password"
-                secureTextEntry={!isShow}
-              />
-              <Text
-                style={styles.passText}
-                onPress={() => {
-                  setIsShow((pS) => (pS === false ? true : false));
-                }}
-              >
-                {isShow ? "Hide" : "Show"}
-              </Text>
+      <TouchableWithoutFeedback onPress={keyboardHide}>
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          style={{ flex: 1 }}
+        >
+          <View style={{ flex: 1 }}></View>
+          <View style={styles.regWrapper}>
+            <View style={styles.contentWrapper}>
+              <Text style={styles.h1}>Login</Text>
+              <View style={styles.fromWrapper}>
+                <TextInput
+                  style={styles.input}
+                  placeholder="Email"
+                  onFocus={() => setIsShowKeyboard(true)}
+                  onChangeText={(value) =>
+                    setUser((pS) => ({ ...pS, email: value }))
+                  }
+                  value={user.email}
+                />
+                <View style={styles.passContainer}>
+                  <View style={styles.passContainer}>
+                    <TextInput
+                      style={styles.input}
+                      placeholder="Password"
+                      secureTextEntry={!passShow}
+                      onFocus={() => setIsShowKeyboard(true)}
+                      onChangeText={(value) =>
+                        setUser((pS) => ({ ...pS, password: value }))
+                      }
+                      value={user.password}
+                    />
+                    <Text
+                      style={styles.passText}
+                      onPress={() => {
+                        setPassShow((pS) => (pS === false ? true : false));
+                      }}
+                    >
+                      {passShow ? "Hide" : "Show"}
+                    </Text>
+                  </View>
+                </View>
+                <TouchableOpacity
+                  activeOpacity={0.5}
+                  style={styles.regBtn}
+                  onPress={onSubmit}
+                >
+                  <Text style={styles.regBtnText}>Login</Text>
+                </TouchableOpacity>
+                <Text style={styles.linkToLogin}>
+                  Don't have an account? Registration
+                </Text>
+              </View>
             </View>
-            <TouchableOpacity activeOpacity={0.5} style={styles.regBtn}>
-              <Text style={styles.regBtnText}>Login</Text>
-            </TouchableOpacity>
-            <Text style={styles.linkToLogin}>
-              Don't have an account? Registration
-            </Text>
           </View>
-        </View>
-      </View>
+        </KeyboardAvoidingView>
+      </TouchableWithoutFeedback>
     </View>
   );
 };
@@ -134,4 +184,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default RegistrationScreen;
+export default LoginScreen;

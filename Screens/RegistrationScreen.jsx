@@ -19,10 +19,19 @@ import {
 import addImg from "../assets/images/add.png";
 import { useState } from "react";
 
+const initialState = {
+  login: "",
+  email: "",
+  password: "",
+};
+
 const RegistrationScreen = () => {
   const [passShow, setPassShow] = useState(false);
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
+  const [user, setUser] = useState(initialState);
+
   const [fontsLoaded] = useFonts({ Roboto_400Regular, Roboto_500Medium });
+
   if (!fontsLoaded) {
     return null;
   }
@@ -30,6 +39,12 @@ const RegistrationScreen = () => {
   const keyboardHide = () => {
     setIsShowKeyboard(false);
     Keyboard.dismiss();
+  };
+
+  const onSubmit = () => {
+    keyboardHide();
+    console.log(user);
+    setUser(initialState);
   };
 
   return (
@@ -55,11 +70,19 @@ const RegistrationScreen = () => {
                   style={styles.input}
                   placeholder="Login"
                   onFocus={() => setIsShowKeyboard(true)}
+                  onChangeText={(value) =>
+                    setUser((pS) => ({ ...pS, login: value }))
+                  }
+                  value={user.login}
                 />
                 <TextInput
                   style={styles.input}
                   placeholder="Email"
                   onFocus={() => setIsShowKeyboard(true)}
+                  onChangeText={(value) =>
+                    setUser((pS) => ({ ...pS, email: value }))
+                  }
+                  value={user.email}
                 />
                 <View style={styles.passContainer}>
                   <TextInput
@@ -67,6 +90,10 @@ const RegistrationScreen = () => {
                     placeholder="Password"
                     secureTextEntry={!passShow}
                     onFocus={() => setIsShowKeyboard(true)}
+                    onChangeText={(value) =>
+                      setUser((pS) => ({ ...pS, password: value }))
+                    }
+                    value={user.password}
                   />
                   <Text
                     style={styles.passText}
@@ -80,7 +107,7 @@ const RegistrationScreen = () => {
                 <TouchableOpacity
                   activeOpacity={0.5}
                   style={styles.regBtn}
-                  onPress={keyboardHide}
+                  onPress={onSubmit}
                 >
                   <Text style={styles.regBtnText}>Registration</Text>
                 </TouchableOpacity>
